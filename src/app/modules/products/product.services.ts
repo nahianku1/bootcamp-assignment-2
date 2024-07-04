@@ -7,8 +7,12 @@ const createProductIntoDB = async (payload: TProduct) => {
   return result;
 };
 
-const getAllProductsFromDB = async () => {
-  const result = await Product.find();
+const getAllProductsFromDB = async (searchTerm: string) => {
+  const result = await Product.find({
+    $or: ["name", "description"].map((field) => ({
+      [field]: { $regex: searchTerm, $options: "i" },
+    })),
+  });
   return result;
 };
 
@@ -56,7 +60,7 @@ const deleteProductFromDB = async (id: string) => {
     throw new AppError(404, "Product not found!");
   }
 
-  const result = await Product.findById(id);
+  const result = await Product.findByIdAndDelete(id);
   return result;
 };
 
@@ -65,4 +69,5 @@ export const ProductServices = {
   getAllProductsFromDB,
   getSingleProductFromDB,
   updateSingleProductIntoDB,
+  deleteProductFromDB,
 };

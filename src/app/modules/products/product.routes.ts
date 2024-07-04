@@ -18,3 +18,4 @@ productRouter.put(
   validateRequest(ProductValidation.updateProductSchema),
   ProductControllers.updateSingleProduct
 );
+productRouter.delete("/:productId", ProductControllers.deleteSingleProduct);
