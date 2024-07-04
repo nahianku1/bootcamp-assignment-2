@@ -12,4 +12,9 @@ productRouter.post(
 );
 
 productRouter.get("/", ProductControllers.getAllProducts);
-productRouter.get("/:productId", ProductControllers.getSingleProducts);
+productRouter.get("/:productId", ProductControllers.getSingleProduct);
+productRouter.put(
+  "/:productId",
+  validateRequest(ProductValidation.updateProductSchema),
+  ProductControllers.updateSingleProduct
+);

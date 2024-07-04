@@ -54,4 +54,6 @@ const createProductSchema = z.object({
   inventory: InventorySchema,
 });
 
-export const ProductValidation = { createProductSchema };
+const updateProductSchema = createProductSchema.partial();
+
+export const ProductValidation = { createProductSchema, updateProductSchema };

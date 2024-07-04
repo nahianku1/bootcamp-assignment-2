@@ -23,7 +23,7 @@ const getAllProducts = catchAsync(async (req, res) => {
   });
 });
 
-const getSingleProducts = catchAsync(async (req, res) => {
+const getSingleProduct = catchAsync(async (req, res) => {
   const result = await ProductServices.getSingleProductFromDB(
     req.params.productId
   );
@@ -35,8 +35,22 @@ const getSingleProducts = catchAsync(async (req, res) => {
   });
 });
 
+const updateSingleProduct = catchAsync(async (req, res) => {
+  const result = await ProductServices.updateSingleProductIntoDB(
+    req.params.productId,
+    req.body
+  );
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "Product updated successfully!",
+    data: result,
+  });
+});
+
 export const ProductControllers = {
   createProduct,
   getAllProducts,
-  getSingleProducts,
+  getSingleProduct,
+  updateSingleProduct,
 };
