@@ -43,7 +43,7 @@ const createProductSchema = z.object({
   }),
   tags: z.array(
     z.string({
-      invalid_type_error: "Item should be string!",
+      invalid_type_error: "Tag item should be a string!",
     }),
     {
       required_error: "Tags is required!",

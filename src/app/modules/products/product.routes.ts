@@ -6,7 +6,9 @@ import { ProductValidation } from "./product.validation";
 export const productRouter = Router();
 
 productRouter.post(
-  "/create-product",
+  "/",
   [validateRequest(ProductValidation.createProductSchema)],
   ProductControllers.createProduct
 );
+
+productRouter.get("/", ProductControllers.getProducts);

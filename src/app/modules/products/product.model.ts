@@ -31,9 +31,18 @@ const ProductSchema = new Schema<TProduct>(
   {
     versionKey: false,
     toJSON: {
-      transform(doc, ret) {
-        const { _id, ...rest } = ret;
-        return { ...rest };
+      transform(doc,ret) {
+        const { _id, variants, inventory, ...rest } = ret;
+        const modifiedVariants = variants.map((variant: TVariants) => {
+          const { type, value } = variant;
+          return { type, value };
+        });
+        delete inventory._id;
+        return {
+          ...rest,
+          variants: modifiedVariants,
+          inventory,
+        };
       },
     },
   }
