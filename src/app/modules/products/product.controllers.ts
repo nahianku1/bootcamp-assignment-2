@@ -9,7 +9,7 @@ const createProduct = catchAsync(async (req, res) => {
     statusCode: 201,
     success: true,
     message: "Product created successfully!",
-    data: result,
+    data: result ? result[0] : "",
   });
 });
 
@@ -32,12 +32,23 @@ const getSingleProduct = catchAsync(async (req, res) => {
   const result = await ProductServices.getSingleProductFromDB(
     req.params.productId
   );
-  sendResponse(res, {
-    statusCode: 200,
-    success: true,
-    message: "Products fetched successfully!",
-    data: result,
-  });
+
+  if (!result) {
+    sendResponse(res, {
+      statusCode: 404,
+      success: false,
+      message: "Product not found!",
+    });
+  }
+
+  if (!res.headersSent) {
+    sendResponse(res, {
+      statusCode: 200,
+      success: true,
+      message: "Products fetched successfully!",
+      data: result,
+    });
+  }
 });
 
 const updateSingleProduct = catchAsync(async (req, res) => {
@@ -45,24 +56,44 @@ const updateSingleProduct = catchAsync(async (req, res) => {
     req.params.productId,
     req.body
   );
-  sendResponse(res, {
-    statusCode: 200,
-    success: true,
-    message: "Product updated successfully!",
-    data: result,
-  });
+  if (!result) {
+    sendResponse(res, {
+      statusCode: 404,
+      success: false,
+      message: "Product not found!",
+    });
+  }
+
+  if (!res.headersSent) {
+    sendResponse(res, {
+      statusCode: 200,
+      success: true,
+      message: "Product updated successfully!",
+      data: result,
+    });
+  }
 });
 
 const deleteSingleProduct = catchAsync(async (req, res) => {
   const result = await ProductServices.deleteProductFromDB(
     req.params.productId
   );
-  sendResponse(res, {
-    statusCode: 200,
-    success: true,
-    message: "Product deleted successfully!",
-    data: null,
-  });
+  if (!result) {
+    sendResponse(res, {
+      statusCode: 404,
+      success: false,
+      message: "Product not found!",
+    });
+  }
+
+  if (!res.headersSent) {
+    sendResponse(res, {
+      statusCode: 200,
+      success: true,
+      message: "Product deleted successfully!",
+      data: result,
+    });
+  }
 });
 
 export const ProductControllers = {

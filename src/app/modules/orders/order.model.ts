@@ -22,7 +22,8 @@ const OrderSchema = new Schema<TOrders, OrderModel>(
 
 OrderSchema.statics.isExists = async (email) => {
   const result = await Order.find({ email });
-  if (result.length === 0) {
+  //if result contains empty array then return null
+  if (result.length === 0) {   
     return null;
   }
   return result;

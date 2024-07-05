@@ -12,4 +12,3 @@ orderRouter.post(
 );
 
 orderRouter.get("/", OrderControllers.getAllOrders);
-// orderRouter.get("/:productId", OrderControllers.getSingleOrder);

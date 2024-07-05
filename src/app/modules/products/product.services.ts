@@ -20,7 +20,7 @@ const getSingleProductFromDB = async (id: string) => {
   const isProductExists = await Product.isExists(id);
 
   if (!isProductExists) {
-    throw new AppError(404, "Product not found!");
+    return null;
   }
 
   const result = await Product.findById(id);
@@ -36,7 +36,7 @@ const updateSingleProductIntoDB = async (
   const { inventory, ...remainingData }: Record<string, unknown> = payload;
 
   if (!isProductExists) {
-    throw new AppError(404, "Product not found!");
+    return null;
   }
 
   if (inventory && Object.keys(inventory).length) {
@@ -57,7 +57,7 @@ const deleteProductFromDB = async (id: string) => {
   const isProductExists = await Product.isExists(id);
 
   if (!isProductExists) {
-    throw new AppError(404, "Product not found!");
+    return null;
   }
 
   const result = await Product.findByIdAndDelete(id);

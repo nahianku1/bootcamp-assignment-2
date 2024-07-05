@@ -4,7 +4,6 @@ import { TOrders } from "./order.types";
 import { TProduct } from "../products/product.types";
 import Product from "../products/product.model";
 import Order from "./order.model";
-import { sendResponse } from "../../utils/sendResponse";
 
 const createOrderIntoDB = async (payload: TOrders) => {
   const session = await startSession();
@@ -25,28 +24,37 @@ const createOrderIntoDB = async (payload: TOrders) => {
 
     console.log(payload.productId);
 
-    if (product.inventory.quantity > 1) {
+    if (
+      product.inventory.quantity > 1 &&
+      product.inventory.quantity > payload.quantity
+    ) {
       result = await Product.findByIdAndUpdate(
         payload.productId,
-        { $inc: { "inventory.quantity": -1 } },
+        { $inc: { "inventory.quantity": -payload.quantity } },
         { new: true, session }
       );
-    } else if (product.inventory.quantity === 1) {
+    } else if (
+      product.inventory.quantity === 1 &&
+      product.inventory.quantity > payload.quantity
+    ) {
       result = await Product.findByIdAndUpdate(
         payload.productId,
         { $set: { "inventory.quantity": 0, "inventory.inStock": false } },
         { new: true, session }
       );
-    } else if (product.inventory.quantity === 0) {
+    } else if (
+      product.inventory.quantity === 0 ||
+      product.inventory.quantity < payload.quantity
+    ) {
       return result;
     }
 
     if (!result) {
-      throw new AppError(500, "Product update failed in Transaction!");
+      return result;
     }
 
     await session.commitTransaction();
-    await session.endSession();
+    // await session.endSession();
     return createdResult;
   } catch (error: any) {
     await session.abortTransaction();
@@ -72,19 +80,8 @@ const getAllOrdersFromDB = async (email: string) => {
   return result;
 };
 
-// const getSingleOrderFromDB = async (email: string) => {
-//   const isOrderExists = await Order.isExists(email);
-
-//   if (!isOrderExists) {
-//     throw new AppError(404, "Order not found!");
-//   }
-
-//   const result = await Order.find({ email });
-//   return result;
-// };
 
 export const OrderServices = {
   createOrderIntoDB,
   getAllOrdersFromDB,
-  // getSingleOrderFromDB,
 };
