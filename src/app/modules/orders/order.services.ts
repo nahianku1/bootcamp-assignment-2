@@ -4,10 +4,11 @@ import { TOrders } from "./order.types";
 import { TProduct } from "../products/product.types";
 import Product from "../products/product.model";
 import Order from "./order.model";
+import { sendResponse } from "../../utils/sendResponse";
 
 const createOrderIntoDB = async (payload: TOrders) => {
   const session = await startSession();
-  let result;
+  let result = null;
 
   try {
     await session.startTransaction();
@@ -36,6 +37,8 @@ const createOrderIntoDB = async (payload: TOrders) => {
         { $set: { "inventory.quantity": 0, "inventory.inStock": false } },
         { new: true, session }
       );
+    } else if (product.inventory.quantity === 0) {
+      return result;
     }
 
     if (!result) {
@@ -53,24 +56,35 @@ const createOrderIntoDB = async (payload: TOrders) => {
   }
 };
 
-const getAllOrdersFromDB = async () => {
-  const result = await Order.find();
-  return result;
-};
+const getAllOrdersFromDB = async (email: string) => {
+  if (email) {
+    const isOrderExists: TOrders[] | null = await Order.isExists(email);
 
-const getSingleOrderFromDB = async (email: string) => {
-  const isOrderExists = await Order.isExists(email);
+    if (!isOrderExists) {
+      return isOrderExists;
+    }
+    const result = await Order.find({ email });
 
-  if (!isOrderExists) {
-    throw new AppError(404, "Order not found!");
+    return result;
   }
+  const result = await Order.find();
 
-  const result = await Order.find({ email });
   return result;
 };
+
+// const getSingleOrderFromDB = async (email: string) => {
+//   const isOrderExists = await Order.isExists(email);
+
+//   if (!isOrderExists) {
+//     throw new AppError(404, "Order not found!");
+//   }
+
+//   const result = await Order.find({ email });
+//   return result;
+// };
 
 export const OrderServices = {
   createOrderIntoDB,
   getAllOrdersFromDB,
-  getSingleOrderFromDB,
+  // getSingleOrderFromDB,
 };

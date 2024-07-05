@@ -8,5 +8,5 @@ export type TOrders = {
 };
 
 export interface OrderModel extends Model<TOrders> {
-  isExists(email: string): Promise<TOrders | null>;
+  isExists(email: string): Promise<TOrders[] | null>;
 }

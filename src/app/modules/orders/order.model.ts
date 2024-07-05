@@ -14,14 +14,18 @@ const OrderSchema = new Schema<TOrders, OrderModel>(
     toJSON: {
       transform(doc, ret) {
         const { _id, ...remainingData } = ret;
-        return { ...remainingData }
+        return { ...remainingData };
       },
     },
   }
 );
 
 OrderSchema.statics.isExists = async (email) => {
-  return await Order.find({email});
+  const result = await Order.find({ email });
+  if (result.length === 0) {
+    return null;
+  }
+  return result;
 };
 
 const Order = model<TOrders, OrderModel>("Order", OrderSchema);
