@@ -22,7 +22,7 @@ const createOrder = catchAsync(async (req, res) => {
       statusCode: 200,
       success: true,
       message: "Order created successfully!",
-      data: result ? result[0] : "",
+      data: result ? result[0] : ""
     });
   }
 });
