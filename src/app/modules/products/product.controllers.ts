@@ -21,7 +21,9 @@ const getAllProducts = catchAsync(async (req, res) => {
   sendResponse(res, {
     statusCode: 200,
     success: true,
-    message: "Products fetched successfully!",
+    message: searchTerm
+      ? `Products matching search term '${searchTerm}' fetched successfully!`
+      : "Products fetched successfully!",
     data: result,
   });
 });
