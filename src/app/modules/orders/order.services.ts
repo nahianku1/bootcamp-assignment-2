@@ -26,8 +26,10 @@ const createOrderIntoDB = async (payload: TOrders) => {
 
     if (
       product.inventory.quantity > 1 &&
-      product.inventory.quantity > payload.quantity
+      product.inventory.quantity >= payload.quantity
     ) {
+      console.log(`Product ${product.inventory.quantity}`,31);
+      
       result = await Product.findByIdAndUpdate(
         payload.productId,
         { $inc: { "inventory.quantity": -payload.quantity } },
@@ -35,7 +37,7 @@ const createOrderIntoDB = async (payload: TOrders) => {
       );
     } else if (
       product.inventory.quantity === 1 &&
-      product.inventory.quantity > payload.quantity
+      product.inventory.quantity >= payload.quantity
     ) {
       result = await Product.findByIdAndUpdate(
         payload.productId,
