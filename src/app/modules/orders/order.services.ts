@@ -21,30 +21,17 @@ const createOrderIntoDB = async (payload: TOrders) => {
       payload.productId
     )) as TProduct;
 
+    if (product.inventory.quantity >= payload.quantity) {
+      const update =
+        product.inventory.quantity > 1
+          ? { $inc: { "inventory.quantity": -payload.quantity } }
+          : { $set: { "inventory.quantity": 0, "inventory.inStock": false } };
 
-    if (
-      product.inventory.quantity > 1 &&
-      product.inventory.quantity >= payload.quantity
-    ) {
-
-      await Product.findByIdAndUpdate(
-        payload.productId,
-        { $inc: { "inventory.quantity": -payload.quantity } },
-        { new: true, session }
-      );
-    } else if (
-      product.inventory.quantity === 1 &&
-      product.inventory.quantity >= payload.quantity
-    ) {
-      await Product.findByIdAndUpdate(
-        payload.productId,
-        { $set: { "inventory.quantity": 0, "inventory.inStock": false } },
-        { new: true, session }
-      );
-    } else if (
-      product.inventory.quantity === 0 ||
-      product.inventory.quantity < payload.quantity
-    ) {
+      await Product.findByIdAndUpdate(payload.productId, update, {
+        new: true,
+        session,
+      });
+    } else {
       return null;
     }
 
