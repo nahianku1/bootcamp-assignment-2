@@ -7,7 +7,6 @@ import Order from "./order.model";
 
 const createOrderIntoDB = async (payload: TOrders) => {
   const session = await startSession();
-  let result = null;
 
   try {
     await session.startTransaction();
@@ -22,15 +21,13 @@ const createOrderIntoDB = async (payload: TOrders) => {
       payload.productId
     )) as TProduct;
 
-    console.log(payload.productId);
 
     if (
       product.inventory.quantity > 1 &&
       product.inventory.quantity >= payload.quantity
     ) {
-      console.log(`Product ${product.inventory.quantity}`,31);
-      
-      result = await Product.findByIdAndUpdate(
+
+      await Product.findByIdAndUpdate(
         payload.productId,
         { $inc: { "inventory.quantity": -payload.quantity } },
         { new: true, session }
@@ -39,7 +36,7 @@ const createOrderIntoDB = async (payload: TOrders) => {
       product.inventory.quantity === 1 &&
       product.inventory.quantity >= payload.quantity
     ) {
-      result = await Product.findByIdAndUpdate(
+      await Product.findByIdAndUpdate(
         payload.productId,
         { $set: { "inventory.quantity": 0, "inventory.inStock": false } },
         { new: true, session }
@@ -48,15 +45,10 @@ const createOrderIntoDB = async (payload: TOrders) => {
       product.inventory.quantity === 0 ||
       product.inventory.quantity < payload.quantity
     ) {
-      return result;
-    }
-
-    if (!result) {
-      return result;
+      return null;
     }
 
     await session.commitTransaction();
-    // await session.endSession();
     return createdResult;
   } catch (error: any) {
     await session.abortTransaction();
@@ -81,7 +73,6 @@ const getAllOrdersFromDB = async (email: string) => {
 
   return result;
 };
-
 
 export const OrderServices = {
   createOrderIntoDB,
